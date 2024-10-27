@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pipexy Configurator</title>
+    <!-- Tailwind CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <!-- React & ReactDOM -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+    <!-- Babel -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+    <style>
+        .hardware-card:hover .hardware-overlay {
+            opacity: 1;
+        }
+        .pipeline-node {
+            transition: all 0.3s;
+        }
+        .pipeline-node:hover {
+            transform: scale(1.05);
+        }
+        .config-step {
+            transition: all 0.3s;
+        }
+        .config-step.active {
+            border-color: #3B82F6;
+            background-color: #EFF6FF;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div id="root"></div>
+
+    <!-- Komponent React w osobnym pliku -->
+    <script type="text/babel" src="components/PipexyConfigurator.js"></script>
+    
+    <!-- Inicjalizacja aplikacji -->
+    <script type="text/babel">
+        ReactDOM.render(
+            <PipexyConfiguratorV2 />,
+            document.getElementById('root')
+        );
+    </script>
+</body>
+</html>
