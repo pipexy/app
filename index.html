@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pipexy Configurator</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+    <style>
+        .hardware-card:hover .hardware-overlay {
+            opacity: 1;
+        }
+        .pipeline-node {
+            transition: all 0.3s;
+        }
+        .pipeline-node:hover {
+            transform: scale(1.05);
+        }
+        .config-step {
+            transition: all 0.3s;
+        }
+        .config-step.active {
+            border-color: #3B82F6;
+            background-color: #EFF6FF;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div id="root"></div>
+    <script type="text/babel">
+        const PipexyConfiguratorV2 = () => {
+            const [activeStep, setActiveStep] = React.useState(1);
+            const [config, setConfig] = React.useState({
+                hardware: null,
+                pipelines: [],
+                modules: [],
+                deployment: {
+                    type: 'local',
+                    settings: {}
+                }
+            });
+
+            const hardwareOptions = [
+                {
+                    id: 'rpi4',
+                    name: 'Raspberry Pi 4',
+                    type: 'SBC',
+                    specs: {
+                        cpu: 'Quad core Cortex-A72',
+                        ram: '8GB',
+                        gpu: 'VideoCore VI'
+                    },
+                    price: 75,
+                    image: '/api/placeholder/200/150'
+                },
+                {
+                    id: 'jetson',
+                    name: 'NVIDIA Jetson Nano',
+                    type: 'AI Computer',
+                    specs: {
+                        cpu: 'Quad core ARM A57',
+                        ram: '4GB',
+                        gpu: '128-core Maxwell'
+                    },
+                    price: 99,
+                    image: '/api/placeholder/200/150'
+                },
+                {
+                    id: 'orangepi',
+                    name: 'Orange Pi 5',
+                    type: 'SBC',
+                    specs: {
+                        cpu: 'RK3588S',
+                        ram: '8GB',
+                        gpu: 'Mali-G610'
+                    },
+                    price: 89,
+                    image: '/api/placeholder/200/150'
+                }
+            ];
+
+            const pipelineTemplates = [
+                {
+                    id: 'retail',
+                    name: 'Retail Analytics',
+                    description: 'People counting, heatmaps, behavior analysis',
+                    modules: ['object-detection', 'tracking', 'analytics'],
+                    requirements: {
+                        minRam: 4,
+                        minCpu: 4,
+                        gpu: true
+                    }
+                },
+                {
+                    id: 'security',
+                    name: 'Security & Surveillance',
+                    description: 'Object detection, face recognition, alerts',
+                    modules: ['face-recognition', 'object-detection', 'alerts'],
+                    requirements: {
+                        minRam: 8,
+                        minCpu: 4,
+                        gpu: true
+                    }
+                },
+                {
+                    id: 'industrial',
+                    name: 'Quality Control',
+                    description: 'Defect detection, measurements, OCR',
+                    modules: ['quality-check', 'measurement', 'reporting'],
+                    requirements: {
+                        minRam: 4,
+                        minCpu: 4,
+                        gpu: false
+                    }
+                }
+            ];
+
+            return (
+                <div className="container mx-auto px-4 py-8">
+                    {/* Header */}
+                    <div className="text-center mb-12">
+                        <h1 className="text-4xl font-bold text-gray-900 mb-4">
+                            Pipexy Configuration Studio
+                        </h1>
+                        <p className="text-gray-600 text-lg">
+                            Build and deploy your custom pipeline in minutes
+                        </p>
+                    </div>
+
+                    {/* Progress Steps */}
+                    <div className="flex justify-between items-center mb-12">
+                        {[1, 2, 3, 4].map(step => (
+                            <div 
+                                key={step} 
+                                className={`flex items-center ${
+                                    step <= activeStep ? 'text-blue-600' : 'text-gray-400'
+                                }`}
+                            >
+                                <div className={`
+                                    w-10 h-10 rounded-full border-2 flex items-center justify-center
+                                    ${step <= activeStep ? 'border-blue-600 bg-blue-50' : 'border-gray-300'}
+                                `}>
+                                    {step}
+                                </div>
+                                {step < 4 && (
+                                    <div className={`w-32 h-1 ${
+                                        step < activeStep ? 'bg-blue-600' : 'bg-gray-300'
+                                    }`} />
+                                )}
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* Step Content */}
+                    <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
+                        {activeStep === 1 && (
+                            <div>
+                                <h2 className="text-2xl font-bold mb-6">Select Hardware</h2>
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                    {hardwareOptions.map(hw => (
+                                        <div 
+                                            key={hw.id}
+                                            className={`
+                                                hardware-card relative rounded-lg border-2 p-4 cursor-pointer
+                                                ${config.hardware?.id === hw.id ? 'border-blue-500' : 'border-gray-200'}
+                                            `}
+                                            onClick={() => setConfig({...config, hardware: hw})}
+                                        >
+                                            <img 
+                                                src={hw.image} 
+                                                alt={hw.name}
+                                                className="w-full h-32 object-cover rounded mb-4"
+                                            />
+                                            <h3 className="text-xl font-semibold mb-2">{hw.name}</h3>
+                                            <p className="text-gray-600 mb-2">{hw.type}</p>
+                                            <ul className="text-sm text-gray-500">
+                                                <li>CPU: {hw.specs.cpu}</li>
+                                                <li>RAM: {hw.specs.ram}</li>
+                                                <li>GPU: {hw.specs.gpu}</li>
+                                            </ul>
+                                            <div className="mt-4">
+                                                <span className="text-lg font-bold">${hw.price}</span>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {activeStep === 2 && (
+                            <div>
+                                <h2 className="text-2xl font-bold mb-6">Select Pipeline Template</h2>
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                    {pipelineTemplates.map(template => (
+                                        <div
+                                            key={template.id}
+                                            className={`
+                                                pipeline-node rounded-lg border-2 p-6 cursor-pointer
+                                                ${config.pipelines.includes(template.id) ? 'border-blue-500 bg-blue-50' : 'border-gray-200'}
+                                            `}
+                                            onClick={() => {
+                                                const pipelines = config.pipelines.includes(template.id)
+                                                    ? config.pipelines.filter(id => id !== template.id)
+                                                    : [...config.pipelines, template.id];
+                                                setConfig({...config, pipelines});
+                                            }}
+                                        >
+                                            <h3 className="text-xl font-semibold mb-3">{template.name}</h3>
+                                            <p className="text-gray-600 mb-4">{template.description}</p>
+                                            <div className="text-sm text-gray-500">
+                                                <p>Requirements:</p>
+                                                <ul className="list-disc ml-4">
+                                                    <li>RAM: {template.requirements.minRam}GB</li>
+                                                    <li>CPU: {template.requirements.minCpu} cores</li>
+                                                    <li>GPU: {template.requirements.gpu ? 'Required' : 'Optional'}</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Navigation Buttons */}
+                        <div className="flex justify-between mt-8">
+                            <button
+                                className={`px-6 py-2 rounded-lg ${
+                                    activeStep > 1 
+                                        ? 'bg-gray-600 text-white' 
+                                        : 'bg-gray-300 text-gray-500'
+                                }`}
+                                onClick={() => activeStep > 1 && setActiveStep(activeStep - 1)}
+                                disabled={activeStep === 1}
+                            >
+                                Previous
+                            </button>
+                            <button
+                                className={`px-6 py-2 rounded-lg ${
+                                    (activeStep === 1 && config.hardware) ||
+                                    (activeStep === 2 && config.pipelines.length > 0)
+                                        ? 'bg-blue-600 text-white'
+                                        : 'bg-blue-300 text-white'
+                                }`}
+                                onClick={() => {
+                                    if (activeStep < 4 && (
+                                        (activeStep === 1 && config.hardware) ||
+                                        (activeStep === 2 && config.pipelines.length > 0)
+                                    )) {
+                                        setActiveStep(activeStep + 1);
+                                    }
+                                }}
+                            >
+                                {activeStep === 4 ? 'Deploy' : 'Next'}
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Configuration Summary */}
+                    <div className="bg-gray-100 rounded-lg p-6">
+                        <h3 className="text-xl font-semibold mb-4">Configuration Summary</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div className="bg-white rounded p-4">
+                                <h4 className="font-medium mb-2">Selected Hardware</h4>
+                                <p className="text-gray-600">
+                                    {config.hardware ? config.hardware.name : 'Not selected'}
+                                </p>
+                            </div>
+                            <div className="bg-white rounded p-4">
+                                <h4 className="font-medium mb-2">Selected Pipelines</h4>
+                                <p className="text-gray-600">
+                                    {config.pipelines.length 
+                                        ? config.pipelines.length + ' selected'
+                                        : 'None selected'
+                                    }
+                                </p>
+                            </div>
+                            <div className="bg-white rounded p-4">
+                                <h4 className="font-medium mb-2">Estimated Cost</h4>
+                                <p className="text-gray-600">
+                                    ${config.hardware ? config.hardware.price : 0}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        ReactDOM.render(
+            <PipexyConfiguratorV2 />,
+            document.getElementById('root')
+        );
+    </script>
+</body>
+</html>
