@@ -11,6 +11,30 @@ const PipexyConfiguratorV2 = () => {
         }
     });
 
+    React.useEffect(() => {
+        if (activeStep === 3) {
+            // Załaduj PayPal SDK
+            const script = document.createElement('script');
+            script.src = 'https://www.paypal.com/sdk/js?client-id=YOUR_CLIENT_ID&currency=USD';
+            script.async = true;
+            script.onload = () => {
+                initPayPalButton(calculateCosts(config, pipelineTemplates), handlePurchaseSuccess);
+            };
+            document.body.appendChild(script);
+
+            return () => {
+                document.body.removeChild(script);
+            };
+        }
+    }, [activeStep]);
+
+    const handlePurchaseSuccess = (orderData) => {
+        // Zapisz informacje o zamówieniu
+        setOrderData(orderData);
+        // Przejdź do potwierdzenia
+        setActiveStep(4);
+    };
+
     const hardwareOptions = [
         {
             id: 'rpi4',
