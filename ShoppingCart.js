@@ -1,170 +1,192 @@
-// ShoppingCart.js component
-const ShoppingCart = ({ config, costs, onPurchase }) => {
-    const [paymentMethod, setPaymentMethod] = React.useState('paypal');
-    const [isProcessing, setIsProcessing] = React.useState(false);
+import React, { useState } from 'react';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { ShoppingCart, CreditCard, PaypalIcon } from 'lucide-react';
 
-    return (
-        <div className="max-w-4xl mx-auto">
-            <h2 className="text-2xl font-bold mb-6">Review & Payment</h2>
-            
-            {/* Cart Summary */}
-            <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
-                <h3 className="text-xl font-semibold mb-4">Order Summary</h3>
-                
-                {/* Hardware */}
-                <div className="border-b pb-4 mb-4">
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <h4 className="font-medium">{config.hardware.name}</h4>
-                            <p className="text-sm text-gray-600">Single Board Computer</p>
-                        </div>
-                        <span className="font-bold">${config.hardware.price}</span>
-                    </div>
-                </div>
+const ShoppingCart = ({ config, costs, onCheckout }) => {
+  const [paymentMethod, setPaymentMethod] = useState(null);
 
-                {/* Pipelines */}
-                <div className="border-b pb-4 mb-4">
-                    <h4 className="font-medium mb-2">Selected Pipelines</h4>
-                    {config.pipelines.map(pipelineId => {
-                        const pipeline = pipelineTemplates.find(t => t.id === pipelineId);
-                        return (
-                            <div key={pipelineId} className="flex justify-between text-sm mb-2">
-                                <span>{pipeline.name}</span>
-                                <span>${pipeline.id === 'retail' ? '29' : pipeline.id === 'security' ? '39' : '49'}</span>
-                            </div>
-                        );
-                    })}
-                </div>
-
-                {/* Subscription */}
-                <div className="border-b pb-4 mb-4">
-                    <div className="flex justify-between">
-                        <div>
-                            <h4 className="font-medium">Monthly Subscription</h4>
-                            <p className="text-sm text-gray-600">Basic Support & Updates</p>
-                        </div>
-                        <span>${costs.subscription}/month</span>
-                    </div>
-                </div>
-
-                {/* Total */}
-                <div className="flex flex-col gap-2">
-                    <div className="flex justify-between text-sm">
-                        <span>Hardware:</span>
-                        <span>${costs.hardware}</span>
-                    </div>
-                    <div className="flex justify-between text-sm">
-                        <span>Setup & Pipelines:</span>
-                        <span>${costs.pipelines}</span>
-                    </div>
-                    <div className="flex justify-between text-sm text-gray-600">
-                        <span>Monthly Subscription:</span>
-                        <span>${costs.subscription}/month</span>
-                    </div>
-                    <div className="flex justify-between font-bold text-lg pt-2 border-t">
-                        <span>Total Today:</span>
-                        <span>${costs.total}</span>
-                    </div>
-                    <p className="text-sm text-gray-600 text-right">
-                        + ${costs.subscription}/month after trial
-                    </p>
-                </div>
+  return (
+    <div>
+      <h2 className="text-2xl font-bold mb-6">Shopping Cart</h2>
+      
+      {/* Cart Items */}
+      <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
+        <h3 className="text-lg font-semibold mb-4">Order Summary</h3>
+        
+        {/* Hardware */}
+        {config.hardware && (
+          <div className="flex justify-between items-center py-3 border-b">
+            <div>
+              <h4 className="font-medium">{config.hardware.name}</h4>
+              <p className="text-sm text-gray-600">Hardware Device</p>
             </div>
-
-            {/* Payment Methods */}
-            <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
-                <h3 className="text-xl font-semibold mb-4">Payment Method</h3>
-                
-                <div className="space-y-4">
-                    {/* PayPal Option */}
-                    <div 
-                        className={`border rounded-lg p-4 cursor-pointer ${
-                            paymentMethod === 'paypal' ? 'border-blue-500 bg-blue-50' : ''
-                        }`}
-                        onClick={() => setPaymentMethod('paypal')}
-                    >
-                        <div className="flex items-center gap-3">
-                            <div className="w-12 h-8 flex items-center">
-                                <img 
-                                    src="/api/placeholder/48/32" 
-                                    alt="PayPal" 
-                                    className="w-full object-contain"
-                                />
-                            </div>
-                            <div>
-                                <h4 className="font-medium">PayPal</h4>
-                                <p className="text-sm text-gray-600">
-                                    Safe payment through PayPal
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Credit Card Option (Disabled for demo) */}
-                    <div className="border rounded-lg p-4 opacity-50 cursor-not-allowed">
-                        <div className="flex items-center gap-3">
-                            <div className="w-12 h-8 flex items-center">
-                                <img 
-                                    src="/api/placeholder/48/32" 
-                                    alt="Credit Card" 
-                                    className="w-full object-contain"
-                                />
-                            </div>
-                            <div>
-                                <h4 className="font-medium">Credit Card</h4>
-                                <p className="text-sm text-gray-600">
-                                    Coming soon
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <div className="text-right">
+              <p className="font-medium">${config.hardware.price}</p>
+              <p className="text-sm text-gray-500">One-time</p>
             </div>
+          </div>
+        )}
 
-            {/* Terms and Conditions */}
-            <div className="bg-gray-50 rounded-lg p-4 mb-6 text-sm">
-                <p className="mb-2">By proceeding with the purchase you agree to:</p>
-                <ul className="list-disc ml-5 space-y-1 text-gray-600">
-                    <li>Pipexy Terms of Service</li>
-                    <li>Monthly subscription billing after trial</li>
-                    <li>Refund policy for hardware</li>
-                </ul>
+        {/* Pipelines */}
+        {config.pipelines.map((pipelineId, index) => {
+          const pipeline = pipelineTemplates.find(t => t.id === pipelineId);
+          return (
+            <div key={index} className="flex justify-between items-center py-3 border-b">
+              <div>
+                <h4 className="font-medium">{pipeline.name}</h4>
+                <p className="text-sm text-gray-600">Pipeline License</p>
+              </div>
+              <div className="text-right">
+                <p className="font-medium">${pipeline.id === 'security' ? 39 : pipeline.id === 'industrial' ? 49 : 29}</p>
+                <p className="text-sm text-gray-500">One-time</p>
+              </div>
             </div>
+          );
+        })}
 
-            {/* Checkout Button */}
-            <div className="flex justify-end items-center gap-4">
-                <button
-                    className="px-6 py-2 rounded-lg border hover:bg-gray-50"
-                    onClick={() => window.history.back()}
-                >
-                    Back
-                </button>
-                <button
-                    className={`px-8 py-3 rounded-lg bg-blue-600 text-white flex items-center gap-2 ${
-                        isProcessing ? 'opacity-75 cursor-not-allowed' : 'hover:bg-blue-700'
-                    }`}
-                    onClick={async () => {
-                        setIsProcessing(true);
-                        // Tutaj dodać integrację z PayPal
-                        await new Promise(resolve => setTimeout(resolve, 1500));
-                        onPurchase();
-                        setIsProcessing(false);
-                    }}
-                    disabled={isProcessing}
-                >
-                    {isProcessing ? (
-                        <>
-                            <span className="animate-spin">⚪</span>
-                            Processing...
-                        </>
-                    ) : (
-                        <>
-                            <span>Checkout with PayPal</span>
-                            <span>${costs.total}</span>
-                        </>
-                    )}
-                </button>
-            </div>
+        {/* Subscription */}
+        <div className="flex justify-between items-center py-3 border-b">
+          <div>
+            <h4 className="font-medium">Basic Support & Updates</h4>
+            <p className="text-sm text-gray-600">Monthly Subscription</p>
+          </div>
+          <div className="text-right">
+            <p className="font-medium">${costs.subscription}/month</p>
+            <p className="text-sm text-gray-500">Recurring</p>
+          </div>
         </div>
-    );
+
+        {/* Total */}
+        <div className="mt-4 pt-4 border-t">
+          <div className="flex justify-between items-center mb-2">
+            <span className="font-medium">One-time Payment</span>
+            <span className="font-bold">${costs.hardware + costs.pipelines}</span>
+          </div>
+          <div className="flex justify-between items-center">
+            <span className="font-medium">Monthly Subscription</span>
+            <span className="font-bold">${costs.subscription}</span>
+          </div>
+          <div className="flex justify-between items-center mt-4 pt-4 border-t">
+            <span className="text-lg font-bold">Total Today</span>
+            <span className="text-lg font-bold text-blue-600">${costs.total}</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Payment Methods */}
+      <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
+        <h3 className="text-lg font-semibold mb-4">Payment Method</h3>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* PayPal */}
+          <div 
+            className={`border rounded-lg p-4 cursor-pointer hover:border-blue-500 transition-all
+              ${paymentMethod === 'paypal' ? 'border-blue-500 bg-blue-50' : ''}`}
+            onClick={() => setPaymentMethod('paypal')}
+          >
+            <div className="flex items-center space-x-3">
+              <div className="w-12 h-12 flex items-center justify-center bg-blue-100 rounded-lg">
+                <img src="/api/placeholder/48/48" alt="PayPal" className="w-8 h-8" />
+              </div>
+              <div>
+                <h4 className="font-medium">PayPal</h4>
+                <p className="text-sm text-gray-600">Pay securely with PayPal</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Credit Card */}
+          <div 
+            className={`border rounded-lg p-4 cursor-pointer hover:border-blue-500 transition-all
+              ${paymentMethod === 'card' ? 'border-blue-500 bg-blue-50' : ''}`}
+            onClick={() => setPaymentMethod('card')}
+          >
+            <div className="flex items-center space-x-3">
+              <div className="w-12 h-12 flex items-center justify-center bg-blue-100 rounded-lg">
+                <CreditCard className="w-6 h-6" />
+              </div>
+              <div>
+                <h4 className="font-medium">Credit Card</h4>
+                <p className="text-sm text-gray-600">All major cards accepted</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Payment Action */}
+      <div className="flex justify-between items-center">
+        <div className="text-sm text-gray-600">
+          By proceeding, you agree to our Terms of Service and Privacy Policy
+        </div>
+        <Button 
+          className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3"
+          disabled={!paymentMethod}
+          onClick={() => onCheckout(paymentMethod)}
+        >
+          {paymentMethod === 'paypal' ? 'Pay with PayPal' : 'Complete Purchase'}
+        </Button>
+      </div>
+    </div>
+  );
 };
+
+const handleCheckout = async (paymentMethod) => {
+  if (paymentMethod === 'paypal') {
+    // Tutaj dodamy integrację z PayPal
+    const paypalOrder = {
+      intent: "CAPTURE",
+      purchase_units: [{
+        amount: {
+          currency_code: "USD",
+          value: costs.total.toString(),
+          breakdown: {
+            item_total: {
+              currency_code: "USD",
+              value: (costs.hardware + costs.pipelines).toString()
+            },
+            shipping: {
+              currency_code: "USD",
+              value: "0.00"
+            }
+          }
+        },
+        items: [
+          {
+            name: config.hardware.name,
+            unit_amount: {
+              currency_code: "USD",
+              value: config.hardware.price.toString()
+            },
+            quantity: "1"
+          },
+          ...config.pipelines.map(pipelineId => ({
+            name: pipelineTemplates.find(t => t.id === pipelineId).name,
+            unit_amount: {
+              currency_code: "USD",
+              value: (pipelineId === 'security' ? "39.00" : pipelineId === 'industrial' ? "49.00" : "29.00")
+            },
+            quantity: "1"
+          }))
+        ]
+      }]
+    };
+    
+    // Tu dodamy logikę inicjalizacji PayPal
+    window.paypal.Buttons({
+      createOrder: (data, actions) => {
+        return actions.order.create(paypalOrder);
+      },
+      onApprove: (data, actions) => {
+        return actions.order.capture().then(function(details) {
+          // Sukces płatności
+          setStep(4); // Przechodzimy do ostatniego kroku
+        });
+      }
+    }).render('#paypal-button-container');
+  }
+};
+
+// Eksport komponentu
+//export default ShoppingCart;
