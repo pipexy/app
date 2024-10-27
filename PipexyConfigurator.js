@@ -155,36 +155,155 @@ const PipexyConfiguratorV2 = () => {
             </div>
         </div>
     );
-
-    // Configuration Summary Component
-    const ConfigurationSummary = () => (
-        <div className="bg-gray-100 rounded-lg p-6 mt-6">
-            <h3 className="text-xl font-semibold mb-4">Configuration Summary</h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="bg-white rounded p-4">
-                    <h4 className="font-medium mb-2">Selected Hardware</h4>
-                    <p className="text-gray-600">
-                        {config.hardware ? config.hardware.name : 'Not selected'}
-                    </p>
+        
+        // Dodajemy helper do kalkulacji kosztów
+        const calculateCosts = (config, pipelineTemplates) => {
+            const costs = {
+                hardware: config.hardware?.price || 0,
+                pipelines: 0,
+                subscription: 0,
+                total: 0
+            };
+        
+            // Koszt pipeline'ów
+            config.pipelines.forEach(pipelineId => {
+                const pipeline = pipelineTemplates.find(t => t.id === pipelineId);
+                switch(pipeline?.id) {
+                    case 'retail':
+                        costs.pipelines += 29;
+                        break;
+                    case 'security':
+                        costs.pipelines += 39;
+                        break;
+                    case 'industrial':
+                        costs.pipelines += 49;
+                        break;
+                    default:
+                        break;
+                }
+            });
+        
+            // Koszt subskrypcji miesięcznej (bazowy)
+            if (config.pipelines.length > 0) {
+                costs.subscription = 19.99;
+            }
+        
+            // Całkowity koszt
+            costs.total = costs.hardware + costs.pipelines + costs.subscription;
+        
+            return costs;
+        };
+        
+        // Zaktualizowany komponent ConfigurationSummary
+        const ConfigurationSummary = () => {
+            const costs = calculateCosts(config, pipelineTemplates);
+        
+            return (
+                <div className="bg-gray-100 rounded-lg p-6 mt-6">
+                    <h3 className="text-xl font-semibold mb-4">Configuration Summary</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div className="bg-white rounded p-4">
+                            <h4 className="font-medium mb-2">Selected Hardware</h4>
+                            <p className="text-gray-600">
+                                {config.hardware ? config.hardware.name : 'Not selected'}
+                            </p>
+                            {config.hardware && (
+                                <p className="text-sm text-blue-600 mt-1">
+                                    ${config.hardware.price}
+                                </p>
+                            )}
+                        </div>
+                        <div className="bg-white rounded p-4">
+                            <h4 className="font-medium mb-2">Selected Pipelines</h4>
+                            <p className="text-gray-600">
+                                {config.pipelines.length 
+                                    ? config.pipelines.map(id => 
+                                        pipelineTemplates.find(t => t.id === id)?.name
+                                      ).join(', ')
+                                    : 'None selected'
+                                }
+                            </p>
+                            {config.pipelines.length > 0 && (
+                                <p className="text-sm text-blue-600 mt-1">
+                                    ${costs.pipelines} total
+                                </p>
+                            )}
+                        </div>
+                        <div className="bg-white rounded p-4">
+                            <h4 className="font-medium mb-2">Monthly Subscription</h4>
+                            <p className="text-gray-600">
+                                {costs.subscription > 0 
+                                    ? 'Basic Support & Updates'
+                                    : 'No subscription selected'
+                                }
+                            </p>
+                            {costs.subscription > 0 && (
+                                <p className="text-sm text-blue-600 mt-1">
+                                    ${costs.subscription}/month
+                                </p>
+                            )}
+                        </div>
+                        <div className="bg-white rounded p-4">
+                            <h4 className="font-medium mb-2">Total Cost</h4>
+                            <div className="space-y-2">
+                                <div className="flex justify-between items-center">
+                                    <span className="text-gray-600">Hardware:</span>
+                                    <span className="font-medium">${costs.hardware}</span>
+                                </div>
+                                <div className="flex justify-between items-center">
+                                    <span className="text-gray-600">Pipelines:</span>
+                                    <span className="font-medium">${costs.pipelines}</span>
+                                </div>
+                                <div className="flex justify-between items-center">
+                                    <span className="text-gray-600">Monthly Sub:</span>
+                                    <span className="font-medium">${costs.subscription}</span>
+                                </div>
+                                <div className="border-t pt-2 mt-2">
+                                    <div className="flex justify-between items-center font-bold">
+                                        <span>Total:</span>
+                                        <span className="text-blue-600">${costs.total}</span>
+                                    </div>
+                                    <p className="text-xs text-gray-500 mt-1">
+                                        + ${costs.subscription}/month
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+        
+                    {/* Dodatkowe informacje o kosztach */}
+                    {costs.total > 0 && (
+                        <div className="mt-4 bg-blue-50 rounded-lg p-4">
+                            <h4 className="font-medium text-blue-800 mb-2">Cost Breakdown</h4>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                                <div>
+                                    <span className="text-gray-600">One-time costs:</span>
+                                    <ul className="list-disc ml-4 text-blue-800">
+                                        <li>Hardware: ${costs.hardware}</li>
+                                        <li>Setup: ${costs.pipelines}</li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <span className="text-gray-600">Monthly costs:</span>
+                                    <ul className="list-disc ml-4 text-blue-800">
+                                        <li>Subscription: ${costs.subscription}</li>
+                                        <li>Support: Included</li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <span className="text-gray-600">Includes:</span>
+                                    <ul className="list-disc ml-4 text-blue-800">
+                                        <li>Free updates</li>
+                                        <li>Community support</li>
+                                        <li>Basic monitoring</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    )}
                 </div>
-                <div className="bg-white rounded p-4">
-                    <h4 className="font-medium mb-2">Selected Pipelines</h4>
-                    <p className="text-gray-600">
-                        {config.pipelines.length 
-                            ? config.pipelines.length + ' selected'
-                            : 'None selected'
-                        }
-                    </p>
-                </div>
-                <div className="bg-white rounded p-4">
-                    <h4 className="font-medium mb-2">Estimated Cost</h4>
-                    <p className="text-gray-600">
-                        ${config.hardware ? config.hardware.price : 0}
-                    </p>
-                </div>
-            </div>
-        </div>
-    );
+            );
+        };
 
     return (
         <div className="container mx-auto px-4 py-8">
