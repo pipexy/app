@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pipexy Configurator</title>
+    
+    <!-- Tailwind CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    
+    <!-- React i ReactDOM -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.development.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.development.js"></script>
+    
+    <!-- Babel do obsługi JSX -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.22.20/babel.min.js"></script>
+
+    <style>
+        .hardware-card:hover .hardware-overlay {
+            opacity: 1;
+        }
+        .pipeline-node {
+            transition: all 0.3s;
+        }
+        .pipeline-node:hover {
+            transform: scale(1.05);
+        }
+        .config-step {
+            transition: all 0.3s;
+        }
+        .config-step.active {
+            border-color: #3B82F6;
+            background-color: #EFF6FF;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <!-- Główny komponent aplikacji -->
+    <script type="text/babel" src="components/PipexyConfig.js"></script>
+    
+    <!-- Komponenty pomocnicze -->
+    <script type="text/babel" src="components/HardwareSelector.js"></script>
+    <script type="text/babel" src="components/PipelineSelector.js"></script>
+    <script type="text/babel" src="components/ConfigSummary.js"></script>
+
+    <!-- Initialize app -->
+    <script type="text/babel">
+        ReactDOM.createRoot(document.getElementById('root')).render(<PipexyConfig />);
+    </script>
+</body>
+</html>
