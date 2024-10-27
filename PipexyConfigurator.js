@@ -15,7 +15,7 @@ const PipexyConfiguratorV2 = () => {
         if (activeStep === 3) {
             // Załaduj PayPal SDK
             const script = document.createElement('script');
-            script.src = 'https://www.paypal.com/sdk/js?client-id=YOUR_CLIENT_ID&currency=USD';
+            script.src = 'https://www.paypal.com/sdk/js?client-id=AeEQLQ4RDcA6Ue2VSGgwNTSx7IUITfEDSQ3lw8s1xei8jSqxDjpyUL85tz8IJzRKS5MLdsYUnLAMXqhM&currency=USD';
             script.async = true;
             script.onload = () => {
                 initPayPalButton(calculateCosts(config, pipelineTemplates), handlePurchaseSuccess);
