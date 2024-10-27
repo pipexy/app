@@ -11,8 +11,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
     <!-- Babel -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+    <!-- PayPal SDK -->
     <script src="https://www.paypal.com/sdk/js?client-id=AW6CzrCpRB7yaUmvhUxV1Hds0k7B5NNKXv38pIEpzdt5xIgyF2nOcJP_JkZ0wYIJoQ-eTWbYCoY4KqZw&currency=EUR"></script>
-     
     <style>
         .hardware-card:hover .hardware-overlay {
             opacity: 1;
@@ -34,11 +34,15 @@
 </head>
 <body class="bg-gray-50">
     <div id="root"></div>
-
-    <!-- Komponent React w osobnym pliku -->
-    <script type="text/babel" src="PipexyConfigurator.js"></script>
     
-    <!-- Inicjalizacja aplikacji -->
+    <!-- PayPal Container -->
+    <div id="paypal-button-container"></div>
+
+    <!-- Component Scripts -->
+    <script type="text/babel" src="PipexyConfigurator.js"></script>
+    <script type="text/babel" src="ShoppingCart.js"></script>
+    
+    <!-- Init Script -->
     <script type="text/babel">
         ReactDOM.render(
             <PipexyConfiguratorV2 />,
