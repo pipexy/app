@@ -276,4 +276,7 @@ const PipexyDeployment = () => {
   );
 };
 
-export default PipexyDeployment;
+//export default PipexyDeployment;
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = PipexyDeployment;
+}
